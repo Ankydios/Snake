@@ -1,0 +1,6 @@
+1. Faire une grille en CSS avec une case d'une couleur différente
+2. Faire se déplacer la case dans une direction en bouclant
+3. Se faire déplacer la case en fonction des flèches entrées
+4. Faire la même chose avec 5 cases qui se déplacent et faire mourir le serpent
+5. Faire apparaître une case d'une couleur différente de manière aléatoire
+6. Faire grandir le serpent
