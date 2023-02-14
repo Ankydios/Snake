@@ -3,6 +3,20 @@
     padding: 0;
 }
 
+body {
+    background-image: url('background.png');
+}
+
+p {
+    justify-content: center;
+    top: 400px;
+    left: 400px;
+    color : red;
+    font-size: 50px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    user-select: none;
+}
+
 .grid-container {
     display: flex;
     background-color: blue;
@@ -10,7 +24,7 @@
     width: 595px;
     height: 525px;
     margin: auto;
-    margin-top: 150px;
+    margin-top: 250px;
 }
 
 .cell {
