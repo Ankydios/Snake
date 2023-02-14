@@ -1,8 +1,35 @@
+// VARIABLES
+var musique_de_qualite = document.createElement("audio");
+var score = document.getElementById('score');
+score.innerHTML = "RUSSES TUÉS : 0"
+var test_musique = true
 var depart = 127;
 var ligne = Math.floor((depart-1) / 17);
 var colonne = (depart-1) % 17 + 1;
-var positionCorps = [depart,depart-1,depart-2,depart-3,depart-4]
-var taille = positionCorps.length
+var positionCorpsInit = [depart,depart-1,depart-2];
+let positionCorps = positionCorpsInit
+var taille = positionCorps.length;
+var last_dir = 'right'
+function generate_pomme() {
+    var positionsPossiblesPomme = [];
+    for (let i = 0; i <= 255; i++) {
+    positionsPossiblesPomme.push(i);
+    }
+
+    for (let i = 0; i < positionCorps.length - 1; i++) {
+        let a = positionCorps[i]
+        positionsPossiblesPomme = positionsPossiblesPomme.filter(item => item != a)
+    }
+
+    let indexAleatoire = Math.floor(Math.random() * positionsPossiblesPomme.length);
+    let positionPomme = positionsPossiblesPomme[indexAleatoire]
+    return positionPomme
+}
+
+let positionPomme = generate_pomme()
+let action = {up: false, down:false, right: false, left: false};
+
+//COULEURS
 for (let i = 0 ; i<taille ; i++) {
     var corps = document.getElementById("case"+String(positionCorps[i]));
     if (i == 0) {
@@ -12,7 +39,8 @@ for (let i = 0 ; i<taille ; i++) {
         corps.style.backgroundColor = '#2C5AB4';
     }
 }
-let action = {up: false, down:false, right: false, left: false}
+var pomme = document.getElementById("case"+String(positionPomme));
+pomme.style.backgroundColor = '#FB335B';
 
 function direction_clavier() {
     if (action.up) {
@@ -34,33 +62,63 @@ function direction_clavier() {
 
 
 window.onkeydown = function(e) {
-    console.log(e)
     switch (e.code) {
         case "ArrowDown":
-            action.up = false;
-            action.down = true;
-            action.right = false;
-            action.left = false;
-            break;
+            if (last_dir != 'up') {
+                action.up = false;
+                action.down = true;
+                action.right = false;
+                action.left = false;
+                break;
+            }
         case "ArrowUp":
-            action.up = true;
-            action.down = false;
-            action.right = false;
-            action.left = false;
-            break;
+            if (last_dir != 'down') {
+                action.up = true;
+                action.down = false;
+                action.right = false;
+                action.left = false;
+                break;
+            }
         case "ArrowRight":
-            action.up = false;
-            action.down = false;
-            action.right = true;
-            action.left = false;
-            break;
+            if (last_dir != 'left') {
+                action.up = false;
+                action.down = false;
+                action.right = true;
+                action.left = false;
+                break;
+            }
         case "ArrowLeft":
-            action.up = false;
-            action.down = false;
-            action.right = false;
-            action.left = true;
-            break;
+            if (last_dir != 'right') {
+                action.up = false;
+                action.down = false;
+                action.right = false;
+                action.left = true;
+                break;
+            }
     }
+    if (test_musique) {
+        musique()
+    }
+    test_musique = false
+}
+
+function mange() {
+    if (positionPomme == positionCorps[0]) {
+        positionCorps.push(positionCorps[positionCorps.length-1])
+        positionPomme = generate_pomme()
+        pomme = document.getElementById("case"+String(positionPomme));
+        pomme.style.backgroundColor = '#FB335B';
+        var myAudio = document.createElement("audio");
+        myAudio.src = "BAH"+String(Math.floor(Math.random() * 7) + 1)+".mp3";
+        myAudio.play(); 
+        score.innerHTML = "RUSSES TUÉS : " + String(positionCorps.length - 3);
+    }
+}
+
+function musique() {
+    musique_de_qualite.src = "BNO.mp3";
+    musique_de_qualite.play();
+    musique_de_qualite.volume = 0.10;
 }
 
 function bouge() {
@@ -70,7 +128,6 @@ function bouge() {
     ligne =  Math.floor((oldPositionHead-1) / 17);
     colonne = (oldPositionHead-1) % 17 + 1;
     direction = direction_clavier()
-    console.log(direction)
     switch(direction) {
         case 'up':{
             if (ligne != 0) {
@@ -112,7 +169,7 @@ function bouge() {
             break;
         }
         }
-    
+    last_dir = direction
     if (direction != 'none') {
     positionHead = ligne*17+colonne;
     var copie_queue = positionCorps.slice(0,positionCorps.length);
@@ -125,7 +182,6 @@ function bouge() {
     //Colorier en bleu la nouvelle case
     head = document.getElementById('case'+String(positionHead));
     head.style.backgroundColor = "#4e7cF6";
-    console.log(positionHead,'tete')
     // Enlever la couleur bleue de la case précédente
     lastSerpent = document.getElementById("case"+String(lastPositionSnake));
     lastSerpent.style.backgroundColor = "";
@@ -134,6 +190,15 @@ function bouge() {
     }
 }
 
-setInterval(function() {
+game = setInterval(function() {
     bouge()
+    mange()
+    console.log(positionPomme)
+    if (positionCorps.slice(1,positionCorps.length).includes(positionCorps[0])) {
+        musique_de_qualite.pause()
+        var myAudio = document.createElement("audio");
+        myAudio.src = "GAMEOVER.mp3";
+        myAudio.play(); 
+        clearInterval(game)
+    }
 }, 70);
