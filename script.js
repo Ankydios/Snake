@@ -1,9 +1,17 @@
-var depart = 10;
+var depart = 127;
 var ligne = Math.floor((depart-1) / 17);
 var colonne = (depart-1) % 17 + 1;
-var serpent = document.getElementById("case"+String(depart));
-var positionSerpent = depart;
-serpent.style.backgroundColor = "blue";
+var positionCorps = [depart,depart-1,depart-2,depart-3,depart-4]
+var taille = positionCorps.length
+for (let i = 0 ; i<taille ; i++) {
+    var corps = document.getElementById("case"+String(positionCorps[i]));
+    if (i == 0) {
+        corps.style.backgroundColor = "#4e7cF6";
+    }
+    else {
+        corps.style.backgroundColor = '#2C5AB4';
+    }
+}
 let action = {up: false, down:false, right: false, left: false}
 
 function direction_clavier() {
@@ -56,10 +64,11 @@ window.onkeydown = function(e) {
 }
 
 function bouge() {
-    // Colorer la nouvelle case en bleu
-    var lastSerpent = document.getElementById("case"+String(positionSerpent));
-    ligne =  Math.floor((positionSerpent-1) / 17);
-    colonne = (positionSerpent-1) % 17 + 1;
+    // Nouvelle position serpent
+    oldPositionHead = positionCorps[0]
+    lastPositionSnake = positionCorps[positionCorps.length - 1]
+    ligne =  Math.floor((oldPositionHead-1) / 17);
+    colonne = (oldPositionHead-1) % 17 + 1;
     direction = direction_clavier()
     console.log(direction)
     switch(direction) {
@@ -104,15 +113,27 @@ function bouge() {
         }
         }
     
-    positionSerpent = ligne*17+colonne;
-    serpent = document.getElementById('case'+String(positionSerpent));
-    serpent.style.backgroundColor = "blue";
-
-    // Enlever la couleur bleue de la case précédente
-    lastSerpent.style.backgroundColor = "";
-    return positionSerpent
+    if (direction != 'none') {
+    positionHead = ligne*17+colonne;
+    var copie_queue = positionCorps.slice(0,positionCorps.length);
+    positionCorps[0] = ligne*17+colonne;
+    for (let i = 1; i < positionCorps.length; i++) {
+        positionCorps[i] = copie_queue[i-1];
     }
+    positionCorps[0] = positionHead
+
+    //Colorier en bleu la nouvelle case
+    head = document.getElementById('case'+String(positionHead));
+    head.style.backgroundColor = "#4e7cF6";
+    console.log(positionHead,'tete')
+    // Enlever la couleur bleue de la case précédente
+    lastSerpent = document.getElementById("case"+String(lastPositionSnake));
+    lastSerpent.style.backgroundColor = "";
+    neck = document.getElementById("case"+String(copie_queue[0]));
+    neck.style.backgroundColor = "#2C5AB4";
+    }
+}
 
 setInterval(function() {
     bouge()
-}, 100);
+}, 70);
