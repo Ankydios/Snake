@@ -20,10 +20,10 @@
 }
 
 .cell:nth-child(even) {
-    background-color: green;
+    background-color: #aad751;
 }
 
 .cell:nth-child(odd) {
-    background-color: darkgreen;
+    background-color: #a2d149;
 }
 
